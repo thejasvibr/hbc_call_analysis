@@ -300,6 +300,10 @@ def make_measurements_to_wide(time_sorted, common_columns):
     # remove any columns with 'partname' in them 
     region_wide_formatted = region_wide_raw.loc[:,~region_wide_raw.columns.str.contains('partname', case=False)] 
     
+    # add the data from the common columns
+    for each in common_columns:
+        region_wide_formatted[each] = time_sorted[each][0]
+        
     return region_wide_formatted
 
 
@@ -350,7 +354,7 @@ def identify_common_columns(df):
     With any numerical value this is highly unlikely -- but may fail !! 
     '''
     repeated_values_in_columns = df.apply(lambda X: X.duplicated(), 0)
-    repeats_in_cols = repeated_values_in_columns.apply(lambda X: sum(X)>1, 0)
+    repeats_in_cols = repeated_values_in_columns.apply(lambda X: sum(X)>=1, 0)
     column_names = list(repeats_in_cols[repeats_in_cols].index)
     return column_names
 
